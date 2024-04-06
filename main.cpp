@@ -8,6 +8,10 @@ int main(void){
     T.set_rec_words();
     T.print();
     std::cout << "\n ----------------------------\n\n";
+    Text T4("data/swedish_IA.txt");
+    T4.set_rec_words();
+    T4.print();
+    std::cout << "\n ----------------------------\n\n";
     Text T2("data/english_IA.txt");
     T2.set_rec_words();
     T2.print();
@@ -18,6 +22,7 @@ int main(void){
     texts.push_back(T);
     texts.push_back(T2);
     texts.push_back(T3);
+    texts.push_back(T4);
 
     std::cout << "\n ----------------------------\n\n";
     Text to_guess("test.txt");
