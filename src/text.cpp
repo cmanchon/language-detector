@@ -45,7 +45,7 @@ Text::Text(std::string filename){
     std::ifstream file(filename);
 
     if (!file.is_open()){
-        std::cerr << "error Text::Text(std::string filename) : error opening file" << filename <<"\n";
+        std::cerr << "error Text::Text(std::string filename) : error opening file " << filename <<"\n";
         exit(1);
     }
 
@@ -82,17 +82,20 @@ Text::Text(std::string filename){
     }
 }
 
-void Text::print() const{
+void Text::print(bool show_text) const{
     std::cout << BOLD << "Language: " << END_FORMAT << language << BOLD << "\n\nSize: " << END_FORMAT << text.size();
     if (text.size() > 1)
         std::cout << " words.";
     else
         std::cout << " word, " << text[0].size() << "characters";
-    std::cout << BOLD << "\n\nContent: \n" << END_FORMAT;
-    for (int i = 0 ; i < (int) text.size() ; i++){
-        std::cout << text[i] << " ";
+        
+    if (show_text){
+        std::cout << BOLD << "\n\nContent: \n" << END_FORMAT;
+        for (int i = 0 ; i < (int) text.size() ; i++){
+            std::cout << text[i] << " ";
+        }
+        std::cout << "\n";
     }
-    std::cout << "\n";
 
     if (special_characters.size() > 0){
         std::cout << BOLD << "\nSpecial characters: '" << END_FORMAT << special_characters << "'"; 
@@ -144,8 +147,28 @@ int Text::is_in_special_characters(ONE_CHARACTER c) const{
 }
 
 
+// TEXT CLASS: setters 
+
+void Text::set_text(const std::string t){
+    std::string tmp = t;
+    char delim = ' ';
+    size_t ind = 0;
+
+    std::string buf;
+    while ((ind = tmp.find(delim)) != std::string::npos){
+        buf = tmp.substr(0, ind);
+        text.push_back(buf);
+        tmp.erase(0, ind + sizeof(delim));
+    }    
+
+    text.push_back(tmp);
+
+}
+
+
+
 void Text::set_special_characters(){
-    std::string normal_characters = "abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ-*+/',.:0123456789()«»?!";
+    std::string normal_characters = "abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ-*+/',.:;0123456789()«»?!„“";
 
     for (int i = 0 ; i < (int)text.size() ; i++){
         for (int j = 0 ; j < (int)text[i].size() ; j++){
@@ -314,7 +337,7 @@ void Text::find_language(std::vector<Text> texts){
 
         //Find highest occurence
         // - symbol
-        int max_char = 0, max_ind_char;
+        int max_char = 0, max_ind_char = -1;
         for (int i = 0 ; i < (int)occurences_char.size() ; i++){
             if (occurences_char[i] > max_char){
                 max_char = occurences_char[i];
@@ -323,7 +346,7 @@ void Text::find_language(std::vector<Text> texts){
         }
 
         // - word
-        int max_word = 0, max_ind_word;
+        int max_word = 0, max_ind_word = -1;
         for (int i = 0 ; i < (int)occurences_word.size() ; i++){
             if (occurences_word[i] > max_word){
                 max_word = occurences_word[i];
@@ -332,7 +355,7 @@ void Text::find_language(std::vector<Text> texts){
         }
 
         //total
-        int max = 0, max_ind;
+        int max = 0, max_ind = -1;
         for (int i = 0 ; i < (int)occurences_word.size() ; i++){
             frequency.push_back(occurences_char[i]+occurences_word[i]);
             if (frequency[i] > max){
@@ -348,11 +371,15 @@ void Text::find_language(std::vector<Text> texts){
                 std::cout << ", ";
         }
 
-        std::cout << "\nSpecial characters: " << max_char << " in common with " << texts[max_ind_char].get_language();
+        if (max_ind_char != -1)
+            std::cout << "\nSpecial characters: " << max_char << " in common with " << texts[max_ind_char].get_language();
+        if (max_ind_word != -1)
         std::cout << "\nRecognizable words: " << max_word << " in common with " << texts[max_ind_word].get_language();
 
-        language.assign(texts[max_ind].get_language());
-        std::cout << "\nWe found the highest number of similarities with " << language;
+        if (max_ind != -1){
+            language.assign(texts[max_ind].get_language());
+            std::cout << "\nWe found the highest number of similarities with " << language;
+        }
     }
     std::cout << "\n";
 

@@ -29,7 +29,7 @@ class Text{
         Text(std::string filename);
         ~Text(){};
 
-        void print() const;
+        void print(bool show_text = 1) const;
         std::string get_special_characters() const{return special_characters;};
         std::vector<std::string> get_rec_words() const{return rec_words;};
         std::string get_language() const{return language;};
@@ -40,6 +40,8 @@ class Text{
         int is_in_special_characters(ONE_CHARACTER) const;
         int is_in_rec_words(std::string s)const{return is_in(rec_words, s);};
 
+        void set_text(std::vector<std::string> t){text = t;};
+        void set_text(std::string t);
         void set_special_characters();
         void set_rec_words();
         void find_language(std::vector<Text> texts);
